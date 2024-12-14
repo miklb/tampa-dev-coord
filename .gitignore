@@ -13,10 +13,6 @@ __pycache__/
 dist/
 build/
 
-# Database
-*.db
-*.sqlite3
-
 # Temporary files
 temp.geojson
 *.tmp
