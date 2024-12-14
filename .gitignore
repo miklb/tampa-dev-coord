@@ -36,3 +36,4 @@ temp.geojson
 
 # Environment variables
 .env
+.vercel
