@@ -1,0 +1,25 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "tampa-dev-coord"
+version = "0.1.0"
+authors = [
+  { name = "Michael Bishop" },
+]
+description = "Import Tampa Development Coordination Locations to Datasette"
+readme = "README.md"
+requires-python = ">=3.6"
+dependencies = [
+    "requests",
+    "datasette",
+    "geojson-to-sqlite",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/Web-Janitor-Consulting/tampa-dev-coord"
+"Bug Tracker" = "https://github.com/Web-Janitor-Consulting/tampa-dev-coord/issues"
+
+[tool.hatch.version]
+path = "src/tampa_dev_coord/__init__.py"
