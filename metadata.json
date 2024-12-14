@@ -1,0 +1,15 @@
+{
+    "title": "Tampa Development Coordination Locations",
+    "description": "Development coordination locations from City of Tampa",
+    "source": "City of Tampa Open Data",
+    "source_url": "https://arcgis.tampagov.net/arcgis/rest/services/OpenData/Planning/MapServer/31",
+    "databases": {
+        "data": {
+            "tables": {
+                "data": {
+                    "sort_desc": "LASTUPDATE"
+                }
+            }
+        }
+    }
+}
