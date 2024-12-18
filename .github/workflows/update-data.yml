@@ -10,7 +10,7 @@ on:
       - main
 
 jobs:
-  update-and-deploy:
+  update:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -21,12 +21,12 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.x'
+        python-version: '3.11'
         
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install requests datasette datasette-publish-vercel geojson-to-sqlite
+        pip install requests datasette geojson-to-sqlite
 
     - name: Run update script
       run: python script.py
@@ -37,13 +37,11 @@ jobs:
         git config --global user.email 'action@github.com'
         git add data.db
         git diff --quiet && git diff --staged --quiet || (git commit -m "Update data $(date -u)" && git push)
-        
-    - name: Deploy to Vercel
+
+    - name: Deploy to Heroku
       env:
-        VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
       run: |
-        datasette publish vercel data.db \
-          --project tampa-dev-coord \
-          --token $VERCEL_TOKEN \
-          --metadata metadata.json \
-          --install datasette-geojson
+        curl https://cli-assets.heroku.com/install.sh | sh
+        heroku plugins:install datasette-publish-heroku
+        datasette publish heroku data.db -n tampa-dev-coord-db

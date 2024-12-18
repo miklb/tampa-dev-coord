@@ -1,1 +1,7 @@
+# Core dependencies
 requests>=2.31.0
+datasette>=1.0
+geojson-to-sqlite>=0.1.1
+
+# Datasette plugins
+datasette-geojson>=0.3
