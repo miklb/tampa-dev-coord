@@ -1,0 +1,1 @@
+web: datasette serve data.db --host 0.0.0.0 --port $PORT
