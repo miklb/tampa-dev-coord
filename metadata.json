@@ -4,11 +4,17 @@
     "source": "City of Tampa Open Data",
     "source_url": "https://arcgis.tampagov.net/arcgis/rest/services/OpenData/Planning/MapServer/31",
     "databases": {
-        "data": {
+        "locations": {
             "tables": {
-                "data": {
+                "current": {
                     "sort_desc": "LASTUPDATE"
+                },
+                "archived": {
+                    "sort_desc": "archived_date"
                 }
+            },
+            "settings": {
+                "journal_mode": "DELETE"
             }
         }
     }
