@@ -20,12 +20,11 @@ def init_db():
     conn = sqlite3.connect(DB_PATH, timeout=TIMEOUT)
     cursor = conn.cursor()
     
-    # Use delete mode instead of WAL for datasette compatibility
     cursor.execute("PRAGMA journal_mode=DELETE")
     cursor.execute("PRAGMA busy_timeout=5000")
     cursor.execute("PRAGMA synchronous=NORMAL")
     
-    cursor.execute("""CREATE TABLE IF NOT EXISTS current (
+    cursor.execute("""CREATE TABLE IF NOT EXISTS current_full (
         id INTEGER,
         OBJECTID INTEGER,
         RECORDID TEXT PRIMARY KEY,
@@ -47,6 +46,22 @@ def init_db():
         URL TEXT,
         geometry TEXT
     )""")
+    
+    cursor.execute("""CREATE VIEW IF NOT EXISTS current AS 
+        SELECT 
+            RECORDID,
+            ADDRESS,
+            UNIT,
+            RECORDALIAS as Type,
+            CRA,
+            NEIGHBORHOOD,
+            COUNCILDISTRICT,
+            CREATEDDATE,
+            LASTUPDATE,
+            URL,
+            geometry
+        FROM current_full
+    """)
     
     cursor.execute("""CREATE TABLE IF NOT EXISTS archived (
         id INTEGER,
@@ -71,6 +86,49 @@ def init_db():
         geometry TEXT,
         archived_date TEXT
     )""")
+    
+    cursor.execute("""CREATE TABLE IF NOT EXISTS archived_full (
+        id INTEGER,
+        OBJECTID INTEGER,
+        RECORDID TEXT PRIMARY KEY,
+        ADDRESS TEXT,
+        UNIT TEXT,
+        APPSTATUS TEXT,
+        TENTATIVEHEARING TEXT,
+        TENTATIVETIME TEXT,
+        RECORDALIAS TEXT,
+        MAPDOT TEXT,
+        CRA TEXT,
+        NEIGHBORHOOD TEXT,
+        COUNCILDISTRICT TEXT,
+        CREATED TEXT,
+        CREATEDDATE INTEGER,
+        LASTUPDATE INTEGER,
+        LASTEDITOR TEXT,
+        GlobalID TEXT,
+        URL TEXT,
+        geometry TEXT,
+        archived_date TEXT
+    )""")
+    
+    cursor.execute("""CREATE VIEW IF NOT EXISTS archived AS 
+        SELECT 
+            RECORDID,
+            ADDRESS,
+            UNIT,
+            RECORDALIAS as Type,
+            MAPDOT,
+            CRA,
+            NEIGHBORHOOD,
+            COUNCILDISTRICT,
+            CREATEDDATE,
+            LASTUPDATE,
+            URL,
+            geometry,
+            archived_date
+        FROM archived_full
+    """)
+    
     return conn, cursor
 
 def fetch_geojson():
@@ -86,14 +144,14 @@ def fetch_geojson():
 
 def archive_missing_records(cursor, conn, current_ids):
     cursor.execute("""
-    INSERT INTO archived
+    INSERT INTO archived_full
     SELECT *, datetime('now')
-    FROM current 
+    FROM current_full 
     WHERE RECORDID NOT IN ({})
     """.format(','.join('?' * len(current_ids))), current_ids)
     
     cursor.execute("""
-    DELETE FROM current 
+    DELETE FROM current_full 
     WHERE RECORDID NOT IN ({})
     """.format(','.join('?' * len(current_ids))), current_ids)
     conn.commit()
@@ -102,14 +160,14 @@ def import_geojson():
     subprocess.run([
         'geojson-to-sqlite',
         DB_PATH,
-        'current',
+        'current_full',  # Change target to table instead of view
         'temp.geojson',
         '--pk=RECORDID'
     ], check=True)
 
 def convert_dates(cursor, conn):
     cursor.execute("""
-    UPDATE current SET
+    UPDATE current_full SET
         CREATEDDATE = strftime('%Y-%m-%dT%H:%M:%SZ', datetime(CREATEDDATE/1000, 'unixepoch')),
         LASTUPDATE = strftime('%Y-%m-%dT%H:%M:%SZ', datetime(LASTUPDATE/1000, 'unixepoch'))
     WHERE CREATEDDATE IS NOT NULL 
@@ -133,7 +191,12 @@ def main():
         
         if fetch_geojson():
             response = requests.get(URL)
-            current_records = response.json()['features']
+            data = response.json()
+            if 'features' not in data:
+                print("Error: Missing 'features' in response")
+                return
+                
+            current_records = data['features']
             current_ids = [r['properties']['RECORDID'] for r in current_records]
             
             archive_missing_records(cursor, conn, current_ids)
@@ -149,6 +212,9 @@ def main():
             
         Path('temp.geojson').unlink(missing_ok=True)
         
+    except Exception as e:
+        print(f"Error: {e}")
+        raise
     finally:
         if 'conn' in locals():
             conn.close()
