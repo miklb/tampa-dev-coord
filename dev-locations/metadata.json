@@ -3,23 +3,31 @@
     "description": "Development coordination locations from City of Tampa",
     "source": "City of Tampa Open Data",
     "source_url": "https://arcgis.tampagov.net/arcgis/rest/services/OpenData/Planning/MapServer/31",
+    "extra_css_urls": [
+        "/static/override.css"
+    ],
     "databases": {
         "locations": {
             "tables": {
+                "current_full": {
+                    "allow": false
+                },
+                "archived_full": {
+                    "allow":false
+                },
                 "current": {
                     "sort_desc": "LASTUPDATE",
                     "facets": [
-                        "RECORDALIAS",
-                        "MAPDOT",
-                        "NEIGHBORHOOD"
+                        "Type",
+                        "NEIGHBORHOOD",
+                        "COUNCILDISTRICT"
                     ],
                     "facet_size": 10
                 },
                 "archived": {
                     "sort_desc": "archived_date",
                     "facets": [
-                        "RECORDALIAS",
-                        "MAPDOT",
+                        "Type",
                         "NEIGHBORHOOD"
                     ]
                 }

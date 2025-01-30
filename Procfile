@@ -1,1 +1,1 @@
-web: datasette serve data.db --host 0.0.0.0 --port $PORT
+web: datasette dev-locations/locations.db -m dev-locations/metadata.json --host 0.0.0.0 --port $PORT --setting suggest_facets off --setting default_page_size 50 --setting max_returned_rows 1000 --setting sql_time_limit_ms 2000 --static static:dev-locations/static

@@ -43,5 +43,7 @@ jobs:
         HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
       run: |
         curl https://cli-assets.heroku.com/install.sh | sh
-        heroku plugins:install datasette-publish-heroku
-        datasette publish heroku data.db -n tampa-dev-coord-db
+        datasette publish heroku dev-locations/locations.db \
+          --metadata dev-locations/metadata.json \
+          --static static:dev-locations/static \
+          -n tampa-dev-coord-db
