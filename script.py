@@ -19,8 +19,11 @@ def convert_timestamp(ts):
 def init_db():
     conn = sqlite3.connect(DB_PATH, timeout=TIMEOUT)
     cursor = conn.cursor()
-    cursor.execute("PRAGMA journal_mode=WAL")
+    
+    # Use delete mode instead of WAL for datasette compatibility
+    cursor.execute("PRAGMA journal_mode=DELETE")
     cursor.execute("PRAGMA busy_timeout=5000")
+    cursor.execute("PRAGMA synchronous=NORMAL")
     
     cursor.execute("""CREATE TABLE IF NOT EXISTS current (
         id INTEGER,
@@ -116,8 +119,16 @@ def convert_dates(cursor, conn):
     """)
     conn.commit()
 
+def cleanup_db_files():
+    """Remove SQLite journal files before serving with datasette"""
+    for ext in ['-wal', '-shm', '-journal']:
+        Path(f"{DB_PATH}{ext}").unlink(missing_ok=True)
+
 def main():
     try:
+        # Clean up any stale WAL files
+        cleanup_db_files()
+        
         conn, cursor = init_db()
         
         if fetch_geojson():
@@ -138,9 +149,10 @@ def main():
             
         Path('temp.geojson').unlink(missing_ok=True)
         
-    except Exception as e:
-        print(f"Error: {e}")
-        raise
+    finally:
+        if 'conn' in locals():
+            conn.close()
+        cleanup_db_files()
 
 if __name__ == "__main__":
     main()
