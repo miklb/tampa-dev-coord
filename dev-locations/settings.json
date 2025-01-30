@@ -1,0 +1,6 @@
+{
+    "suggest_facets": false,
+    "default_page_size": 50,
+    "max_returned_rows": 1000,
+    "sql_time_limit_ms": 2000
+}

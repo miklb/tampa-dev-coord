@@ -7,10 +7,21 @@
         "locations": {
             "tables": {
                 "current": {
-                    "sort_desc": "LASTUPDATE"
+                    "sort_desc": "LASTUPDATE",
+                    "facets": [
+                        "RECORDALIAS",
+                        "MAPDOT",
+                        "NEIGHBORHOOD"
+                    ],
+                    "facet_size": 10
                 },
                 "archived": {
-                    "sort_desc": "archived_date"
+                    "sort_desc": "archived_date",
+                    "facets": [
+                        "RECORDALIAS",
+                        "MAPDOT",
+                        "NEIGHBORHOOD"
+                    ]
                 }
             },
             "settings": {
