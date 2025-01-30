@@ -35,8 +35,8 @@ jobs:
       run: |
         git config --global user.name 'GitHub Action'
         git config --global user.email 'action@github.com'
-        git add data.db
-        git diff --quiet && git diff --staged --quiet || (git commit -m "Update data $(date -u)" && git push)
+        git add dev-locations/locations.db
+        git diff --quiet && git diff --staged --quiet || (git commit -m "Update locations $(date -u)" && git push)
 
     - name: Deploy to Heroku
       env:

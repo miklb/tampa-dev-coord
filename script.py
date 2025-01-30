@@ -7,7 +7,7 @@ from pathlib import Path
 import time
 
 URL = "https://arcgis.tampagov.net/arcgis/rest/services/OpenData/Planning/MapServer/31/query?outFields=*&where=1%3D1&f=geojson"
-DB_PATH = "locations.db"
+DB_PATH = "dev-locations/locations.db"
 TIMEOUT = 20
 
 def convert_timestamp(ts):
