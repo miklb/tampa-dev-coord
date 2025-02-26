@@ -45,6 +45,9 @@ jobs:
         # Install Heroku CLI
         curl https://cli-assets.heroku.com/install.sh | sh
         
+        # Install required Heroku plugin (non-interactive)
+        heroku plugins:install heroku-builds --force
+        
         # Deploy to Heroku
         datasette publish heroku dev-locations/locations.db \
           --metadata dev-locations/metadata.json \
