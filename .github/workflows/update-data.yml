@@ -43,7 +43,13 @@ jobs:
         HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
       run: |
         curl https://cli-assets.heroku.com/install.sh | sh
+        # Verify directory exists
+        ls -la dev-locations/
+        # Use corrected static path syntax
         datasette publish heroku dev-locations/locations.db \
           --metadata dev-locations/metadata.json \
-          --static static:dev-locations/static \
+          --setting suggest_facets off \
+          --setting default_page_size 50 \
+          --setting max_returned_rows 1000 \
+          --static=static:./dev-locations/static \
           -n tampa-dev-coord-db
