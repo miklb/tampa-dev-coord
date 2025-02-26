@@ -42,15 +42,7 @@ jobs:
       env:
         HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
       run: |
-        # Create static directory and copy CSS file
-        mkdir -p dev-locations/static
-        cp -f static/override.css dev-locations/static/ 2>/dev/null || true
-        
-        # Debug step
-        echo "Static files:"
-        ls -la dev-locations/static/
-        
-        # Deploy with correct path
+        # Deploy to Heroku
         datasette publish heroku dev-locations/locations.db \
           --metadata dev-locations/metadata.json \
           --static static:dev-locations/static \
