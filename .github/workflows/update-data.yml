@@ -42,6 +42,9 @@ jobs:
       env:
         HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
       run: |
+        # Install Heroku CLI
+        curl https://cli-assets.heroku.com/install.sh | sh
+        
         # Deploy to Heroku
         datasette publish heroku dev-locations/locations.db \
           --metadata dev-locations/metadata.json \
