@@ -17,6 +17,8 @@ jobs:
     
     steps:
     - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Fetch all history for all branches and tags
     
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -43,4 +45,6 @@ jobs:
         HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
       run: |
         curl https://cli-assets.heroku.com/install.sh | sh
+        # Ensure we have full history before pushing
+        git fetch --unshallow || true
         git push https://heroku:$HEROKU_API_KEY@git.heroku.com/tampa-dev-coord-db.git main
