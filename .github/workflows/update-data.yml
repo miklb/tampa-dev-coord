@@ -44,6 +44,8 @@ jobs:
       env:
         HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
       run: |
-        curl https://cli-assets.heroku.com/install.sh | sh
-        # No need for unshallow since we're using fetch-depth: 0
-        git push https://heroku:$HEROKU_API_KEY@git.heroku.com/tampa-dev-coord-db.git main
+        # Use datasette's built-in publishing functionality
+        datasette publish heroku dev-locations/locations.db \
+          --metadata dev-locations/metadata.json \
+          --static static:dev-locations/static \
+          -n tampa-dev-coord-db
