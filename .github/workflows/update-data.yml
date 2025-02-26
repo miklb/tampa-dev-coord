@@ -55,5 +55,5 @@ jobs:
         # Deploy with correct path
         datasette publish heroku dev-locations/locations.db \
           --metadata dev-locations/metadata.json \
-          --static static:./dev-locations/static \
+          --static static:dev-locations/static \
           -n tampa-dev-coord-db
