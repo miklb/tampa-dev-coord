@@ -53,9 +53,3 @@ jobs:
           --metadata dev-locations/metadata.json \
           --static static:dev-locations/static \
           -n tampa-dev-coord-db
-          
-        # Configure Datasette settings using Heroku config vars
-        heroku config:set DATASETTE_SUGGEST_FACETS=off -a tampa-dev-coord-db
-        heroku config:set DATASETTE_DEFAULT_PAGE_SIZE=50 -a tampa-dev-coord-db
-        heroku config:set DATASETTE_MAX_RETURNED_ROWS=1000 -a tampa-dev-coord-db
-        heroku config:set DATASETTE_SQL_TIME_LIMIT_MS=2000 -a tampa-dev-coord-db
