@@ -143,11 +143,16 @@ def fetch_geojson():
         return False
 
 def archive_missing_records(cursor, conn, current_ids):
+    # Insert only records that don't already exist in archived_full
     cursor.execute("""
     INSERT INTO archived_full
-    SELECT *, datetime('now')
+    SELECT current_full.*, datetime('now')
     FROM current_full 
-    WHERE RECORDID NOT IN ({})
+    WHERE current_full.RECORDID NOT IN ({})
+    AND NOT EXISTS (
+        SELECT 1 FROM archived_full 
+        WHERE archived_full.RECORDID = current_full.RECORDID
+    )
     """.format(','.join('?' * len(current_ids))), current_ids)
     
     cursor.execute("""
