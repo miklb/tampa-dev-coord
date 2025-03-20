@@ -117,7 +117,6 @@ def init_db():
             ADDRESS,
             UNIT,
             RECORDALIAS as Type,
-            MAPDOT,
             CRA,
             NEIGHBORHOOD,
             COUNCILDISTRICT,
