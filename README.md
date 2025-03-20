@@ -1,20 +1,28 @@
 # Tampa Development Coordination Locations - Datasette
 
-This repository uses a Python script to import data from the GeoJSON endpoint into a SQLite database for use with [Datasette](https://datasette.io).
+This repository uses a Python script to import data from the City of Tampa's ArcGIS GeoJSON endpoint into a SQLite database for viewing with [Datasette](https://datasette.io).
 
 ## Requirements
 
-- Python 3.6+
+- Python 3.11+
 - `requests` library
+- `datasette` (version 0.65.1)
 - `sqlite3` (included with Python)
 - `geojson-to-sqlite` tool
+- `datasette-geojson` plugin
 
 ## Installation
 
 1. Install dependencies:
 
     ```bash
-    pip install requests datasette geojson-to-sqlite
+    pip install -r requirements.txt
+    ```
+
+2. Set up Python version:
+
+    ```bash
+    echo "3.11" > .python-version
     ```
 
 ## Usage
@@ -27,69 +35,87 @@ This repository uses a Python script to import data from the GeoJSON endpoint in
 
    The script will:
    - Fetch GeoJSON from Tampa's ArcGIS endpoint
-   - Create/update SQLite database (`data.db`)
-   - Normalize timestamps (CREATEDDATE, LASTUPDATE)
-   - Track new entries with `date_added`
-   - Mark removed entries as `archived` with `date_archived`
+   - Update SQLite database in `dev-locations/locations.db`
+   - Archive removed records with timestamp
+   - Convert Unix timestamps to ISO format
 
-2. Schedule daily updates (optional):
+2. Run Datasette locally:
 
     ```bash
-    crontab -e
-    ```
-
-    Add this line to run at midnight daily:
-    ```cron
-    0 0 * * * cd /path/to/project && /usr/bin/python script.py
+    datasette dev-locations/locations.db -m dev-locations/metadata.json \
+      --setting suggest_facets off --setting default_page_size 50 \
+      --static static:dev-locations/static
     ```
 
 ## Deployment
 
-Deploy with Datasette:
+Deploy to Heroku:
 
-1. Start local server:
-
-    ```bash
-    datasette data.db
-    ```
-
-2. Deploy to cloud (optional):
-
-    ```bash
-    datasette publish cloudrun data.db
-    ```
-
-For more deployment options, see [Datasette documentation](https://docs.datasette.io/en/stable/publishing.html).
+```bash
+datasette publish heroku dev-locations/locations.db \
+  --metadata dev-locations/metadata.json \
+  --static static:dev-locations/static \
+  -n tampa-dev-coord-db
+```
 
 ## Automated Deployment
 
 This repository uses GitHub Actions to:
 1. Run the script daily at midnight UTC
-2. Deploy updated database to Vercel via datasette-publish-vercel
+2. Commit database changes to the repository
+3. Deploy the updated database to Heroku
 
-To set up automated deployment:
-
-1. Create a Vercel account and get API token
-2. Add token as GitHub repository secret named `VERCEL_TOKEN`
-3. Enable GitHub Actions in repository settings
-4. Push code to main branch to trigger initial deployment
-
-The live deployment will be available at: `https://your-project-name.vercel.app`
+The workflow file `.github/workflows/update-data.yml` handles:
+- Scheduled runs
+- Manual triggers
+- Updates when code is pushed to main
+- Deployment to Heroku with proper configuration
 
 ## Data Structure
 
-The database contains these fields:
+The database contains these components:
+- `current_full` - Complete table with all fields (hidden from public view)
+- `archived_full` - Archive of removed records (hidden from public view)
+- `current` - Public view with renamed columns and sensitive data removed
+- `archived` - Public view of archived records
+
+Key fields include:
 - `RECORDID` (Primary Key)
-- Location: `ADDRESS`, `UNIT`, `geometry` (GeoJSON Point)
-- Status: `APPSTATUS`, `TENTATIVEHEARING`, `TENTATIVETIME`
+- Location data: `ADDRESS`, `UNIT`, `geometry` (GeoJSON Point)
+- Status data: `APPSTATUS`, `TENTATIVEHEARING`, `TENTATIVETIME`
+- Type information: `RECORDALIAS` (displayed as "Type")
 - Metadata: `CREATEDDATE`, `LASTUPDATE` (ISO format)
-- System: `date_added`, `date_archived`, `archived`
+- For archived records: `archived_date`
+
+## Configuration
+
+### Metadata
+
+The `dev-locations/metadata.json` file configures:
+- Database title and description
+- Table display options
+- Custom facets
+- CSS styling
+- Table permissions
+
+### Settings
+
+Configure Datasette with environment variables or the `--setting` flag:
+
+```bash
+datasette dev-locations/locations.db --setting suggest_facets off --setting default_page_size 50
+```
 
 ## Development
 
+Project structure:
+- `dev-locations/` - Main directory containing database and config
+- `dev-locations/static/` - Static assets (CSS)
+- `script.py` - Main data processing script
+- `Procfile` - Defines Heroku web process
+
 Temporary files:
 - `temp.geojson` - Deleted after import
-- [data.db](http://_vscodecontentref_/0) - SQLite database (add to .gitignore)
 
 ## License
 
