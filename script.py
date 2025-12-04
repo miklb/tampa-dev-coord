@@ -88,9 +88,16 @@ def init_db():
         archived_date TEXT
     )""")
     
-    # Drop old archived table if it exists and create as view
-    cursor.execute("DROP TABLE IF EXISTS archived")
-    cursor.execute("DROP VIEW IF EXISTS archived")
+    # Drop old archived table/view if it exists (handle both cases)
+    try:
+        cursor.execute("DROP TABLE IF EXISTS archived")
+    except sqlite3.OperationalError:
+        pass  # It's a view, not a table
+    try:
+        cursor.execute("DROP VIEW IF EXISTS archived")
+    except sqlite3.OperationalError:
+        pass  # It's a table, not a view
+    
     cursor.execute("""CREATE VIEW archived AS 
         SELECT 
             RECORDID,
