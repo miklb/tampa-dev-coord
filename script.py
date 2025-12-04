@@ -47,7 +47,8 @@ def init_db():
         geometry TEXT
     )""")
     
-    cursor.execute("""CREATE VIEW IF NOT EXISTS current AS 
+    cursor.execute("DROP VIEW IF EXISTS current")
+    cursor.execute("""CREATE VIEW current AS 
         SELECT 
             RECORDID,
             ADDRESS,
@@ -62,30 +63,6 @@ def init_db():
             geometry
         FROM current_full
     """)
-    
-    cursor.execute("""CREATE TABLE IF NOT EXISTS archived (
-        id INTEGER,
-        OBJECTID INTEGER,
-        RECORDID TEXT PRIMARY KEY,
-        ADDRESS TEXT,
-        UNIT TEXT,
-        APPSTATUS TEXT,
-        TENTATIVEHEARING TEXT,
-        TENTATIVETIME TEXT,
-        RECORDALIAS TEXT,
-        MAPDOT TEXT,
-        CRA TEXT,
-        NEIGHBORHOOD TEXT,
-        COUNCILDISTRICT TEXT,
-        CREATED TEXT,
-        CREATEDDATE INTEGER,
-        LASTUPDATE INTEGER,
-        LASTEDITOR TEXT,
-        GlobalID TEXT,
-        URL TEXT,
-        geometry TEXT,
-        archived_date TEXT
-    )""")
     
     cursor.execute("""CREATE TABLE IF NOT EXISTS archived_full (
         id INTEGER,
@@ -111,7 +88,10 @@ def init_db():
         archived_date TEXT
     )""")
     
-    cursor.execute("""CREATE VIEW IF NOT EXISTS archived AS 
+    # Drop old archived table if it exists and create as view
+    cursor.execute("DROP TABLE IF EXISTS archived")
+    cursor.execute("DROP VIEW IF EXISTS archived")
+    cursor.execute("""CREATE VIEW archived AS 
         SELECT 
             RECORDID,
             ADDRESS,
@@ -127,6 +107,16 @@ def init_db():
             archived_date
         FROM archived_full
     """)
+    
+    # Add indexes for better query performance
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_current_type ON current_full(RECORDALIAS)")
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_current_neighborhood ON current_full(NEIGHBORHOOD)")
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_current_district ON current_full(COUNCILDISTRICT)")
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_current_lastupdate ON current_full(LASTUPDATE)")
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_archived_type ON archived_full(RECORDALIAS)")
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_archived_date ON archived_full(archived_date)")
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_archived_neighborhood ON archived_full(NEIGHBORHOOD)")
+    conn.commit()
     
     return conn, cursor
 
