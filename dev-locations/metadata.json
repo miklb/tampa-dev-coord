@@ -6,6 +6,11 @@
     "extra_css_urls": [
         "/static/override.css"
     ],
+    "plugins": {
+        "datasette-geojson": {
+            "geojson_column": "geometry"
+        }
+    },
     "databases": {
         "locations": {
             "description_html": "<div style=\"background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px;\"><h2>About This Database</h2><p>This database tracks development coordination locations in Tampa, FL. Data is automatically updated daily from the <a href=\"https://city-tampa.opendata.arcgis.com/\" target=\"_blank\">City of Tampa's Open Data Portal</a>.</p><p><strong>What's included:</strong> Current development coordination records and an archive of removed records, with location data, status information, and timestamps.</p><p style=\"margin-top: 15px;\"><em>Note: Update the support links in metadata.json with your actual donation platform URLs. See NEXT_STEPS.md for detailed instructions.</em></p></div>",
