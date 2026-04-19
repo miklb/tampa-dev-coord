@@ -42,4 +42,4 @@ jobs:
       env:
         HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
       run: |
-        git push https://heroku:${HEROKU_API_KEY}@git.heroku.com/tampa-dev-coord-db.git HEAD:main
+        git push --force https://heroku:${HEROKU_API_KEY}@git.heroku.com/tampa-dev-coord-db.git HEAD:main
