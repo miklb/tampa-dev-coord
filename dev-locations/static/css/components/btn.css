@@ -1,0 +1,23 @@
+/* ============================================================================
+   COMPONENT: btn — pill-shaped action button / link.
+   ========================================================================== */
+@layer components {
+  .btn {
+    display: inline-block;
+    font-family: var(--font-sans);
+    font-weight: 700;
+    letter-spacing: .03em;
+    border: 0;
+    border-radius: 999px;
+    padding: .7rem 1.2rem;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+    line-height: 1.2;
+  }
+  .btn--gold { background: var(--accent); color: #3a2a08; }
+  .btn--gold:hover { background: #d9a648; color: #3a2a08; }
+  .btn--ink  { background: var(--ink); color: #fff; }
+  .btn--ink:hover { background: color-mix(in srgb, var(--ink) 85%, #000); color: #fff; }
+  .btn--block { display: block; }
+}

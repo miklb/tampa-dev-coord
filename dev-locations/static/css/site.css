@@ -1,0 +1,32 @@
+/* ============================================================================
+   site.css — Monitor design-system entry point for this Datasette instance.
+   Named "site.css" (not "app.css") to avoid confusion with Datasette's own
+   bundled stylesheet at /-/static/app.css.
+
+   THE LOAD-BEARING TRICK: Datasette's app.css is imported here into the
+   LOWEST cascade layer ("datasette") instead of being <link>ed unlayered by
+   base.html (our fork removes that link). Unlayered CSS would beat any
+   @layer rules no matter what, so layering app.css is what lets the synced
+   tm-static layers — and theme.css above them — win exactly the way they do
+   on tampamonitor.com and meetings.tampamonitor.com.
+
+   Everything imported here except theme.css is synced verbatim from
+   tm-static by scripts/sync-design.js — never hand-edit those files.
+   Dev-coord-specific deviations belong in theme.css (the `theme` layer,
+   highest). tm-static's reset.css is deliberately not imported: app.css
+   ships its own reset, and ours would strip the margins its UI relies on.
+
+   @font-face rules are not subject to cascade layers, so fonts.css
+   effectively sits outside the stack. */
+@layer datasette, tokens, base, layout, components, theme;
+
+@import url("fonts.css");
+@import url("/-/static/app.css") layer(datasette);
+@import url("tokens.css");
+@import url("base.css");
+@import url("layout.css");
+@import url("components/masthead.css");
+@import url("components/mainnav.css");
+@import url("components/site-footer.css");
+@import url("components/btn.css");
+@import url("theme.css");

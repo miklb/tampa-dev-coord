@@ -1,0 +1,35 @@
+{#
+  Monitor site chrome: masthead + primary nav. Markup ported from tm-static's
+  src/_includes/components/masthead.njk + mainnav.njk (collapsed from Nunjucks
+  macros to flat Jinja — this chrome never varies by page, and Datasette has
+  no _data/site.json-style cascade, so the site data is hardcoded here).
+  Branding mirrors the meetings site: brand name = the outlet, brand__tag =
+  the tool. This <header> is the page's single banner landmark — base.html
+  demotes Datasette's own crumbs bar to a <div> for exactly that reason.
+#}
+{# error pages render with a minimal context that has no `request` —
+   guard it or every 404/500 becomes a hard 500 #}
+{% set current_path = request.path if request is defined else "" %}
+<header class="masthead">
+  <div class="wrap">
+    {# no aria-label: the visible text (site name + tag) is the accessible
+       name; an override that doesn't contain it fails WCAG 2.5.3 #}
+    <a class="brand" href="/">
+      <img class="brand__mark" src="/static/images/city-hall-outline.svg" alt="" width="46" height="57">
+      <span>
+        <span class="brand__name">The Tampa Monitor</span>
+        <span class="brand__tag">Development Coordination</span>
+      </span>
+    </a>
+  </div>
+</header>
+<nav class="mainnav" aria-label="Sections">
+  <div class="wrap">
+    <ul>
+      <li><a href="/"{% if current_path == "/" %} aria-current="page"{% endif %}>Overview</a></li>
+      <li><a href="/locations/current"{% if current_path == "/locations/current" %} aria-current="page"{% endif %}>Current</a></li>
+      <li><a href="/locations/archived"{% if current_path == "/locations/archived" %} aria-current="page"{% endif %}>Archived</a></li>
+      <li><a href="https://tampamonitor.com/">The Monitor ↗</a></li>
+    </ul>
+  </div>
+</nav>

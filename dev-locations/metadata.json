@@ -4,7 +4,7 @@
     "source": "City of Tampa Open Data",
     "source_url": "https://arcgis.tampagov.net/arcgis/rest/services/OpenData/Planning/MapServer/31",
     "extra_css_urls": [
-        "/static/override.css"
+        "/static/css/site.css"
     ],
     "plugins": {
         "datasette-geojson": {
@@ -13,7 +13,7 @@
     },
     "databases": {
         "locations": {
-            "description_html": "<div style=\"background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px;\"><h2>About This Database</h2><p>This database tracks development coordination locations in Tampa, FL. Data is automatically updated daily from the <a href=\"https://city-tampa.opendata.arcgis.com/\" target=\"_blank\">City of Tampa's Open Data Portal</a>.</p><p><strong>What's included:</strong> Current development coordination records and an archive of removed records, with location data, status information, and timestamps.</p><p style=\"margin-top: 15px;\"><em>Note: Update the support links in metadata.json with your actual donation platform URLs. See NEXT_STEPS.md for detailed instructions.</em></p></div>",
+            "description_html": "<p>Tracks development coordination locations in Tampa, FL. Data is refreshed nightly from the <a href=\"https://city-tampa.opendata.arcgis.com/\">City of Tampa's Open Data Portal</a>.</p><p><strong>current</strong> holds active records; <strong>archived</strong> holds records that dropped off the source feed, timestamped when they were archived.</p>",
             "tables": {
                 "current_full": {
                     "allow": false

@@ -1,0 +1,57 @@
+{#
+  Custom homepage — replaces Datasette's default database-listing index.
+  Note: `current`/`archived` are SQL views, and Datasette's IndexView only
+  computes row counts for real tables, so this page deliberately hardcodes
+  its copy instead of rendering counts that would come out blank.
+#}
+{% extends "base.html" %}
+
+{% block title %}{{ metadata.title or "Tampa Development Coordination" }}{% endblock %}
+
+{% block body_class %}index{% endblock %}
+
+{% block content %}
+<div class="tool-hero flow">
+  <p class="tool-hero__kicker">A Tampa Monitor Data Tool</p>
+  <h1>Tampa Development Coordination</h1>
+  <p>Tracks development coordination records — new construction, additions, and site plans moving through the City of Tampa's review process — refreshed nightly from the City's open data portal.</p>
+</div>
+
+<div class="story-grid tool-cards">
+  <article class="tool-card">
+    <h2><a href="/locations/current">Current Records</a></h2>
+    <p>Active development coordination cases still moving through review. Filter by type, neighborhood, or council district.</p>
+    <a class="btn btn--gold" href="/locations/current">View Current</a>
+  </article>
+
+  <article class="tool-card">
+    <h2><a href="/locations/archived">Archived Records</a></h2>
+    <p>Cases that have dropped off the City's active feed, timestamped when they were archived.</p>
+    <a class="btn btn--ink" href="/locations/archived">View Archived</a>
+  </article>
+
+  <article class="tool-card">
+    <h2><a href="https://tampamonitor.com/">Weekly Agenda Maps</a></h2>
+    <p>Applications up for a public hearing are mapped in the Monitor's weekly council agenda coverage, powered by this feed.</p>
+    <a class="btn btn--ink" href="https://tampamonitor.com/">The Tampa Monitor ↗</a>
+  </article>
+</div>
+
+<section class="feed-docs flow">
+  <h2>Feeds &amp; data</h2>
+  <p>Every view here is also a machine-readable feed — add a format suffix to any table URL:</p>
+  <ul class="bullets">
+    <li><code>/locations/current.json?_shape=objects</code> &mdash; current records as JSON</li>
+    <li><code>/locations/current.geojson</code> &mdash; current records as a GeoJSON FeatureCollection</li>
+    <li><code>/locations/archived.json?_shape=objects</code> &mdash; archived records as JSON</li>
+    <li><code>/locations/archived.geojson</code> &mdash; archived records as GeoJSON</li>
+  </ul>
+  <p>CORS is enabled, so the feeds can be used directly from the browser — they power the maps in <a href="https://tampamonitor.com/">The Tampa Monitor</a>'s weekly agenda coverage. GeoJSON output via <a href="https://github.com/eyeseast/datasette-geojson">datasette-geojson</a>.</p>
+</section>
+
+<section class="flow">
+  <h2>About this data</h2>
+  <p>Source: <a href="https://city-tampa.opendata.arcgis.com/">City of Tampa Open Data Portal</a> &mdash; Development Coordination layer.</p>
+  <p>An automated pipeline fetches the City's ArcGIS feed nightly at 00:00 UTC, diffs it against the previous run, and moves any record that drops off the feed into the archive with a timestamp.</p>
+</section>
+{% endblock %}

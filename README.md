@@ -6,7 +6,7 @@ This repository uses a Python script to import data from the City of Tampa's Arc
 
 - Python 3.11+
 - `requests` library
-- `datasette` (version 0.65.1)
+- `datasette` (version 0.65.2 — latest stable; a 1.0 upgrade needs the template fork and metadata config redone, see Theming)
 - `sqlite3` (included with Python)
 - `geojson-to-sqlite` tool
 - `datasette-geojson` plugin
@@ -43,6 +43,7 @@ This repository uses a Python script to import data from the City of Tampa's Arc
 
     ```bash
     datasette dev-locations/locations.db -m dev-locations/metadata.json \
+      --template-dir dev-locations/templates \
       --setting suggest_facets off --setting default_page_size 50 \
       --static static:dev-locations/static
     ```
@@ -54,6 +55,7 @@ Deploy to Heroku:
 ```bash
 datasette publish heroku dev-locations/locations.db \
   --metadata dev-locations/metadata.json \
+  --template-dir dev-locations/templates \
   --static static:dev-locations/static \
   -n tampa-dev-coord-db
 ```
@@ -106,11 +108,37 @@ Configure Datasette with environment variables or the `--setting` flag:
 datasette dev-locations/locations.db --setting suggest_facets off --setting default_page_size 50
 ```
 
+## Theming
+
+The site is themed to match [The Tampa Monitor](https://tampamonitor.com/)'s design
+system. `~/Sites/tm-static` is the source of truth; shared CSS and fonts are copied
+in verbatim (never hand-edited here) by a sync script:
+
+```bash
+node scripts/sync-design.js           # copy anything that drifted from tm-static
+node scripts/sync-design.js --check   # report drift without writing (exit 1 if any)
+```
+
+How it fits together:
+- `dev-locations/templates/` - forked `base.html` wraps every Datasette page in the
+  Monitor chrome (`_monitor_header.html`, `_monitor_footer.html`); `index.html` is a
+  custom homepage. Activated by the `--template-dir` flag (Procfile + commands above).
+- `dev-locations/static/css/site.css` - the stylesheet entry point. It imports
+  Datasette's own `app.css` into the **lowest cascade layer** so the synced
+  design-system layers (and `theme.css`) can override it; the stock unlayered
+  `app.css` link is removed in the forked `base.html`. Don't re-add it.
+- `dev-locations/static/css/theme.css` - the only hand-edited CSS file: all
+  dev-coord-specific styling (Datasette UI retheme, homepage). It must stay the
+  last import in `site.css`.
+- Everything else under `static/css/` and `static/fonts/` is a pristine synced copy.
+
 ## Development
 
 Project structure:
 - `dev-locations/` - Main directory containing database and config
-- `dev-locations/static/` - Static assets (CSS)
+- `dev-locations/templates/` - Custom Datasette templates (Monitor chrome + homepage)
+- `dev-locations/static/css/`, `dev-locations/static/fonts/` - Design system (synced from tm-static, see Theming)
+- `scripts/sync-design.js` - One-way design-system sync from tm-static
 - `script.py` - Main data processing script
 - `Procfile` - Defines Heroku web process
 

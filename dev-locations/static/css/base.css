@@ -1,0 +1,54 @@
+/* ============================================================================
+   BASE — element-level defaults (the "unclassed HTML reads well" layer).
+   From the mockups' base block.
+   ========================================================================== */
+@layer base {
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-serif);
+    font-size: var(--step-0);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a {
+    color: var(--brand);
+    text-decoration-thickness: .08em;
+    text-underline-offset: .18em;
+  }
+  a:hover { color: var(--c-ink); }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-serif);
+    line-height: 1.12;
+    color: var(--ink);
+    text-wrap: balance;
+  }
+
+  /* visible, never-removed focus ring */
+  :focus-visible {
+    outline: 3px solid var(--brand);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      transition: none !important;
+      animation: none !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* Cross-document view transitions — the browser cross-fades between pages on
+   same-origin navigations. Pure-CSS progressive enhancement (Chrome/Edge 126+,
+   Safari 18.2+; everyone else no-ops), opted out for reduced-motion readers.
+   Sits OUTSIDE @layer: @view-transition isn't a style rule, so it takes no
+   part in the cascade (same convention as @font-face in fonts.css). */
+@media not (prefers-reduced-motion: reduce) {
+  @view-transition {
+    navigation: auto;
+  }
+}

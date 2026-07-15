@@ -1,0 +1,48 @@
+{#
+  Monitor site footer. Markup ported from tm-static's
+  src/_includes/components/site-footer.njk (macro collapsed to flat Jinja,
+  site data hardcoded — see _monitor_header.html). This is the page's single
+  <footer> (contentinfo landmark) — base.html's wrapper is a plain
+  <div class="ft"> specifically so this can be the real one; don't nest
+  another <footer> inside it. Datasette's own _footer.html (Powered by
+  Datasette · query time · data source) is re-included at the bottom; Jinja
+  includes share the parent context, so its variables still resolve.
+
+  Known limitation: the copyright year is hardcoded (Datasette's Jinja has no
+  current-year global short of writing a plugin) — bump it annually.
+#}
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="site-footer__grid">
+      <div class="site-footer__brand">
+        <span class="brand__name">The Tampa Monitor</span>
+        <p>Development coordination locations, tracked nightly from the City of Tampa's open data portal.</p>
+      </div>
+      <nav aria-label="This tool">
+        <h2>This Tool</h2>
+        <ul>
+          <li><a href="/">Overview</a></li>
+          <li><a href="/locations/current">Current</a></li>
+          <li><a href="/locations/archived">Archived</a></li>
+        </ul>
+      </nav>
+      <nav aria-label="The Monitor">
+        <h2>The Monitor</h2>
+        <ul>
+          <li><a href="https://tampamonitor.com/">tampamonitor.com</a></li>
+        </ul>
+      </nav>
+      <nav aria-label="Source">
+        <h2>Source</h2>
+        <ul>
+          <li><a href="https://city-tampa.opendata.arcgis.com/">City of Tampa Open Data</a></li>
+        </ul>
+      </nav>
+    </div>
+    <div class="colophon">
+      <span>&copy; 2026 The Tampa Monitor &middot; Unofficial resource</span>
+      <span class="colophon__creed">Independent &middot; Transparent &middot; Fact-based</span>
+    </div>
+    <p class="datasette-attribution">{% include "_footer.html" %}</p>
+  </div>
+</footer>

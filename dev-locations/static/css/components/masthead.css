@@ -1,0 +1,68 @@
+/* ============================================================================
+   COMPONENT: masthead — brand mark + tagline + search.
+   ========================================================================== */
+@layer components {
+  .masthead {
+    border-bottom: 3px solid var(--ink);
+    background: var(--bg);
+  }
+  .masthead .wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-lg);
+    padding-block: var(--s-lg);
+    flex-wrap: wrap;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: var(--s-md);
+    text-decoration: none;
+    color: var(--ink);
+  }
+  .brand__mark  { flex: none; height: 54px; width: auto; display: block; }
+  .brand__name  { font-weight: 700; font-size: var(--step-3); letter-spacing: -.01em; line-height: 1; display: block; }
+  .brand__tag   {
+    font-family: var(--font-sans);
+    font-weight: 700;
+    font-size: var(--step--1);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--brand);
+    margin-top: .5rem;
+    display: block;
+  }
+
+  .masthead__tools { display: flex; align-items: center; gap: var(--s-md); }
+
+  .search {
+    display: flex;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    overflow: hidden;
+    background: var(--surface);
+  }
+  .search input {
+    border: 0;
+    padding: .5rem .9rem;
+    font: inherit;
+    font-family: var(--font-sans);
+    font-size: var(--step--1);
+    background: transparent;
+    color: var(--ink);
+    min-width: 9rem;
+  }
+  .search input:focus { outline: none; }
+  .search button {
+    border: 0;
+    background: var(--ink);
+    color: #fff;
+    padding-inline: .9rem;
+    cursor: pointer;
+    font-family: var(--font-sans);
+    font-weight: 600;
+  }
+  .search button:hover { background: color-mix(in srgb, var(--ink) 85%, #000); }
+}

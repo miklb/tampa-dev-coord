@@ -1,0 +1,223 @@
+/* ============================================================================
+   theme.css — dev-coord's own layer: Datasette UI retheme + homepage styles.
+   The one file in css/ that is NOT synced from tm-static; all local
+   deviation from the shared design system lives here (the analog of
+   meetings' local.css).
+
+   Sits in the `theme` layer, above everything site.css imports — including
+   Datasette's app.css, which site.css demotes into the lowest layer. Rules
+   here restate app.css's own selectors against the design tokens. The only
+   !important usage is where Datasette injects inline styles (the per-database
+   hash-colored accent stripes), which nothing short of !important can beat.
+   ========================================================================== */
+@layer theme {
+
+  /* ---- Body: sans, not the design system's serif — dev-coord is a data
+     tool, not a publication (same call the meetings site made). The brand
+     wordmark opts back into serif since it normally inherits it. ---- */
+  body { font-family: var(--font-sans); }
+  .brand__name { font-family: var(--font-serif); }
+
+  /* ---- Monitor chrome: strip the padding/min-height that app.css's bare
+     `header, footer` tag selectors put on the masthead and site footer. ---- */
+  .masthead { padding: 0; min-height: 0; overflow: visible; }
+  .site-footer { padding: 0; min-height: 0; overflow: visible; margin-top: var(--s-2xl); }
+
+  /* ---- Datasette's crumbs strip. Our base.html renames its <header> to
+     <div class="datasette-toolbar"> (single banner landmark = the masthead),
+     which also detaches it from app.css's blue-banner header rule — restyle
+     it as a slim utility bar between the mainnav and the content. ---- */
+  .datasette-toolbar {
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--line);
+    font-family: var(--font-sans);
+    font-size: var(--step--1);
+  }
+  /* nothing to show (no crumbs, anonymous instance) → no bar; on the
+     homepage the lone "home" crumb is redundant, hide it there too */
+  .datasette-toolbar:not(:has(.crumbs, .nav-menu, .actor)) { display: none; }
+  body.index .datasette-toolbar { display: none; }
+  .datasette-toolbar nav {
+    max-width: var(--wrap);
+    margin-inline: auto;
+    padding: .5rem var(--s-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--s-md);
+  }
+  .datasette-toolbar .crumbs { flex: 1; margin: 0; }
+  .datasette-toolbar .crumbs a:link,
+  .datasette-toolbar .crumbs a:visited { color: var(--ink-muted); text-decoration: none; }
+  .datasette-toolbar .crumbs a:hover,
+  .datasette-toolbar .crumbs a:focus { color: var(--brand); text-decoration: underline; }
+  /* anchor the (plugin) menu dropdown to the toolbar, not the page */
+  .datasette-toolbar details.nav-menu { position: relative; }
+  .datasette-toolbar .nav-menu-inner { top: 1.5rem; right: 0; border-radius: var(--radius-sm); }
+  details .nav-menu-inner { background-color: var(--ink); }
+
+  /* ---- Content column: align with the chrome's .wrap rail ---- */
+  section.content {
+    max-width: var(--wrap);
+    margin: 0 auto;
+    padding: var(--s-md) var(--s-lg) var(--s-2xl);
+  }
+
+  /* ---- Accent stripes: table.html/database.html set an inline
+     style="border-color:#hash", row.html/query.html an inline border-left
+     on the <h1>. Inline styles beat every layer — hence the !important. ---- */
+  .page-header { border-left-color: var(--accent) !important; }
+  section.content h1[style] { border-left-color: var(--accent) !important; }
+
+  /* ---- Tables ---- */
+  .table-wrapper {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+  }
+  td { border-top-color: var(--line); border-right-color: var(--line); padding: 6px 8px; }
+  th {
+    font-family: var(--font-sans);
+    font-weight: 700;
+    color: var(--ink-muted);
+    text-align: left;
+    padding: 8px 1em 8px 8px;
+  }
+  td em { color: var(--ink-muted); }
+  .type-float, .type-int { color: var(--ink-muted); }
+  /* long single-token columns (Accela URL, raw GeoJSON): pin each to one
+     clipped line — wrapping them lets the table algorithm squeeze the column
+     into a one-character-wide sliver hundreds of lines tall. Replaces the
+     old override.css width/overflow:hidden clip. */
+  .rows-and-columns td.col-URL,
+  .rows-and-columns td.col-geometry {
+    max-width: 26ch;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  p.zero-results {
+    border-color: var(--line);
+    background-color: var(--surface-2);
+    border-radius: var(--radius-sm);
+  }
+  @media only screen and (max-width: 576px) {
+    /* app.css turns rows into stacked cards at this width; cells become
+       display:block, so wrapping is safe again */
+    .rows-and-columns tr { border-color: var(--line); border-radius: var(--radius-sm); }
+    .rows-and-columns td.col-URL,
+    .rows-and-columns td.col-geometry {
+      max-width: none;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+  }
+
+  /* ---- Forms / filters ---- */
+  form input[type=text],
+  form input[type=search],
+  .filters input.filter-value {
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-sans);
+    background: var(--surface);
+    color: var(--ink);
+  }
+  .select-wrapper {
+    border-color: var(--line-strong);
+    border-radius: var(--radius-sm);
+    background-color: var(--surface);
+  }
+  .select-wrapper select,
+  .select-wrapper option { font-family: var(--font-sans); }
+  form input[type=submit] {
+    background-color: var(--brand);
+    border-color: var(--brand);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-sans);
+    font-weight: 600;
+  }
+  form input[type=submit]:hover { background-color: color-mix(in srgb, var(--brand) 85%, #000); }
+  form button[type=button] {
+    color: var(--brand);
+    border-color: var(--brand);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-sans);
+  }
+  form.sql textarea { border: 1px solid var(--line-strong); border-radius: var(--radius-sm); }
+
+  /* ---- Facets ---- */
+  .facet-info-total { color: var(--ink-muted); }
+
+  /* ---- Messages / menus / export panel ---- */
+  .message-info { background-color: color-mix(in srgb, var(--brand) 14%, transparent); border-radius: var(--radius-sm); }
+  .message-warning { background-color: color-mix(in srgb, var(--accent) 30%, transparent); border-radius: var(--radius-sm); }
+  .message-error { background-color: color-mix(in srgb, #c0392b 18%, transparent); border-radius: var(--radius-sm); }
+  .dropdown-menu {
+    border-color: var(--line-strong);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-sans);
+    box-shadow: var(--shadow);
+  }
+  .dropdown-menu li { border-bottom-color: var(--line); }
+  .dropdown-menu a:hover { background-color: var(--surface-2); }
+  .advanced-export {
+    background-color: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow);
+  }
+
+  /* ---- metadata description_html card (database page) ---- */
+  .metadata-description {
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: var(--s-lg);
+    margin-bottom: var(--s-lg);
+  }
+
+  /* ---- Homepage (templates/index.html) ---- */
+  .tool-hero { max-width: var(--measure); padding-block: var(--s-lg) 0; }
+  .tool-hero h1 { font-size: var(--step-4); line-height: 1.1; margin: 0; }
+  .tool-hero__kicker {
+    font-family: var(--font-sans);
+    font-weight: 700;
+    font-size: var(--step--1);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--brand);
+    margin: 0;
+  }
+  .tool-cards { margin-block: var(--s-xl) var(--s-2xl); }
+  .tool-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: var(--s-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-sm);
+    align-items: flex-start;
+  }
+  .tool-card h2 { font-size: var(--step-1); margin: 0; }
+  .tool-card h2 a:link, .tool-card h2 a:visited { color: var(--ink); text-decoration: none; }
+  .tool-card h2 a:hover, .tool-card h2 a:focus { color: var(--brand); }
+  .tool-card p { margin: 0; }
+  .tool-card .btn { margin-top: auto; }
+  .feed-docs code {
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: .1em .4em;
+    font-size: .9em;
+  }
+
+  /* ---- "Powered by Datasette" line, tucked into the Monitor footer ---- */
+  .datasette-attribution {
+    margin: var(--s-lg) 0 0;
+    font-family: var(--font-sans);
+    font-size: .72rem;
+    color: color-mix(in srgb, #fff 55%, transparent);
+  }
+  .datasette-attribution a { color: inherit; }
+}

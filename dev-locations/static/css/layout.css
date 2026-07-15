@@ -1,0 +1,98 @@
+/* ============================================================================
+   LAYOUT — page-level structural primitives (not components). From the mockups.
+   ========================================================================== */
+@layer layout {
+  /* centered content rail */
+  .wrap { max-width: var(--wrap); margin-inline: auto; padding-inline: var(--s-lg); }
+
+  /* main + aside two-column shell (stacks on small screens) */
+  .layout {
+    display: grid;
+    gap: var(--s-2xl);
+    /* minmax(0,…) not 1fr: lets a wide child (data-table) scroll instead of
+       forcing the track past 100vw (mobile horizontal-scroll fix) */
+    grid-template-columns: minmax(0, 1fr);
+    padding-block: var(--s-2xl);
+  }
+  @media (min-width: 62rem) {
+    .layout {
+      grid-template-columns: minmax(0, 1fr) 21rem;
+      gap: var(--s-3xl);
+      align-items: start;
+    }
+  }
+
+  /* Layout with a sponsor rail (home). The rail is source-ordered before <main>
+     so it clears the fold when the grid collapses to one column on mobile. On
+     desktop the named areas lift it back to the top of the sidebar column and
+     let <main> span both rows — one instance, no duplicated markup. The
+     modifier is only applied when a sponsor is active, so the areas never
+     leave an empty cell. */
+  @media (min-width: 62rem) {
+    .layout--sponsor {
+      grid-template-areas:
+        "main sponsor"
+        "main aside";
+      /* auto 1fr, NOT two auto rows: main spans both rows, and auto rows
+         split a spanning item's height equally — which shoved the aside a
+         half-page below the sponsor. Pin row 1 to the sponsor's height and
+         let row 2 absorb the rest. */
+      grid-template-rows: auto 1fr;
+      row-gap: var(--s-xl);
+    }
+    .layout--sponsor > main         { grid-area: main; }
+    .layout--sponsor > .sponsor-rail { grid-area: sponsor; }
+    .layout--sponsor > .aside        { grid-area: aside; }
+  }
+
+  /* sidebar column: stack panels with consistent gap */
+  .aside { display: flex; flex-direction: column; gap: var(--s-xl); }
+
+  /* story card grid — fluid auto-fill. Used in the "Latest coverage" curated
+     section, where the sidebar already constrains it to ~2-up. */
+  .story-grid {
+    display: grid;
+    gap: var(--s-xl);
+    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  }
+
+  /* --3up: the archive spans the full page width, so cap the fluid grid at a
+     steady 3-up on desktop (2-up on tablet) instead of auto-filling to 4+. */
+  @media (min-width: 48rem) {
+    .story-grid--3up { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 64rem) {
+    .story-grid--3up { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  /* feature row — two-column layout below the fold (data-card + feed) */
+  .feature-row {
+    display: grid;
+    gap: var(--s-2xl);
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 62rem) {
+    .feature-row { grid-template-columns: 1.05fr .95fr; align-items: start; }
+  }
+
+  /* section wrapper — breathing room for full-width content sections */
+  .section { padding-block: var(--s-2xl); }
+
+  /* vertical rhythm helper: owl-selector stack */
+  .flow > * + * { margin-top: var(--s-lg); }
+
+  /* skip link */
+  .skip-link {
+    position: absolute;
+    left: var(--s-sm);
+    top: -3rem;
+    background: var(--c-ink);
+    color: #fff;
+    padding: .6rem 1rem;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-sans);
+    z-index: 50;
+    transition: top .15s;
+  }
+  .skip-link:focus { top: var(--s-sm); }
+}

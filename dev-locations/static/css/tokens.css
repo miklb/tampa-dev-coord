@@ -1,0 +1,55 @@
+/* ============================================================================
+   TOKENS — the single source of truth for the design system.
+   Ported verbatim from the locked mockups' :root (home-mockup.html /
+   single-mockup.html). Token scheme is canonical: `--c-*` brand palette +
+   semantic color roles, `--s-*` spacing scale, `--step-*` type scale.
+   (NOT the WordPress preset variable names — retired along with the old style.css.)
+   ========================================================================== */
+@layer tokens {
+  :root {
+    /* brand palette (from theme.json) */
+    --c-base:#F1F1E6; --c-ink:#314A59; --c-gold:#E6B45E; --c-rose:#E6A4A1;
+    --c-teal:#1D636B; --c-gray:#8A8A82; --c-paper:#F8F8F2;
+
+    /* semantic color roles — components reference THESE, not the raw palette */
+    --bg:var(--c-base);
+    --surface:#FFFFFF;
+    --surface-2:var(--c-paper);
+    --ink:var(--c-ink);
+    /* darkest surface it sits on is --bg (#F1F1E6): #566B78 = 4.9:1 there,
+       5.2:1 on paper (the mockups' #5C7280 measured 4.43:1 — under AA) */
+    --ink-muted:#566B78;
+    --brand:var(--c-teal);
+    --accent:var(--c-gold);
+    --highlight:var(--c-rose);
+    --line:color-mix(in srgb, var(--c-ink) 16%, transparent);
+    --line-strong:color-mix(in srgb, var(--c-ink) 30%, transparent);
+
+    /* type families — fonts loaded in base.njk <head> (self-host/subset later) */
+    --font-serif:"PT Serif", Georgia, "Times New Roman", serif;
+    --font-sans:"Libre Franklin", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+
+    /* fluid type scale */
+    --step--1:clamp(.78rem,.76rem + .1vw,.83rem);
+    --step-0:1rem;
+    --step-1:clamp(1.13rem,1.08rem + .25vw,1.25rem);
+    --step-2:clamp(1.33rem,1.24rem + .45vw,1.6rem);
+    --step-3:clamp(1.6rem,1.42rem + .9vw,2.1rem);
+    --step-4:clamp(1.95rem,1.62rem + 1.6vw,2.9rem);
+    --step-5:clamp(2.4rem,1.85rem + 2.7vw,4rem);
+
+    /* spacing scale (~1.5 ratio) */
+    --s-2xs:.25rem; --s-xs:.5rem; --s-sm:.75rem; --s-md:1rem;
+    --s-lg:1.5rem; --s-xl:2.25rem; --s-2xl:3.5rem; --s-3xl:5rem;
+
+    /* radii / elevation / measure */
+    --radius:10px; --radius-sm:6px;
+    --shadow:0 2px 10px color-mix(in srgb, var(--c-ink) 12%, transparent);
+    --measure:66ch;
+    --wrap:1180px;
+
+    /* reading-body size — single-post prose runs larger than --step-0 (~18px)
+       for comfortable long-form reading (see single-mockup .prose). */
+    --step-body:1.125rem;
+  }
+}
